@@ -9,21 +9,24 @@ class ast():
 def atom_parser(stream):
     if not stream:
         raise SyntaxError("Unexcepted EOF")
+    if stream[0] == ')':
+        return None, 0
     if stream[0].isupper() == True or stream[0].islower() == True or stream[0].replace(".", "", 1).isdigit() == True:
-        return ast(stream[0], None, None), 1
-    print('stream[0]', stream[0])
+        if len(stream) > 1 and stream[1] == ')':
+            return None, 1
+        else:
+            return ast(stream[0], None, None), 1
     if stream[0] == '(':
         right, current_r = plus_parser(stream[1:])
-        print("Ok")
         if current_r < len(stream) and stream[current_r + 1] == ')':
-            print("Parenthese :", current_r, stream[current_r])
             return right, current_r + 2
         raise SyntaxError("Missing )")
-    print(stream[0])
     raise SyntaxError("Missing operand")
 
 def exposant_parser(stream):
     left, current = atom_parser(stream)
+    if current < len(stream) and stream[current] == ')':
+        return left, 0
     if stream[0] == '^':
         right, current_r = exposant_parser(stream[current + 1:])
         return ast(stream[current], left, right), current + current_r + 1
@@ -31,6 +34,8 @@ def exposant_parser(stream):
 
 def multiplcation_parser(stream):
     left, current = exposant_parser(stream)
+    if current < len(stream) and stream[current] == ')':
+        return left, 0
     if current < len(stream) and stream[current] == '*':
         right, current_r = multiplcation_parser(stream[current + 1:])
         return ast(stream[current], left, right), current + current_r + 1
@@ -40,6 +45,8 @@ def multiplcation_parser(stream):
 
 def plus_parser(stream):
     left, current = multiplcation_parser(stream)
+    if current < len(stream) and stream[current] == ')':
+        return left, current
     if current < len(stream) and stream[current] in ['+', '-']:
         right, current_r = plus_parser(stream[current + 1:])
         return ast(stream[current], left, right), current + current_r + 1
