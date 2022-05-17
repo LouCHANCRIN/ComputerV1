@@ -4,17 +4,6 @@ import sys
 from lexer import lexing_line, OPERATOR
 from parse import if_parser
 
-
-#     *
-# 1           ^
-#         X       0
-
-
-
-#             ^
-#     *           0
-# 1       X
-
 def print_tree(tree, current):
     print(current, tree.value)
     if tree.left is not None:
@@ -49,8 +38,9 @@ def read_input(line):
             tmp_parser = if_parser(tmp)
             # rule = {"règle": tmp_parser, "ligne": tmp}
             # print(tmp_parser.left, tmp_parser.value, tmp_parser.right)
+            print("\n\n")
             print_tree(tmp_parser.left, "center")
-            print("\n.\n.\n.\n.\n")
+            print("\n.\n")
             print_tree(tmp_parser.right, "center")
 
 

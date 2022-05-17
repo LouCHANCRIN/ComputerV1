@@ -9,13 +9,8 @@ class ast():
 def atom_parser(stream):
     if not stream:
         raise SyntaxError("Unexcepted EOF")
-    if stream[0] == ')':
-        return None, 0
     if stream[0].isupper() == True or stream[0].islower() == True or stream[0].replace(".", "", 1).isdigit() == True:
-        if len(stream) > 1 and stream[1] == ')':
-            return None, 1
-        else:
-            return ast(stream[0], None, None), 1
+        return ast(stream[0], None, None), 1
     if stream[0] == '(':
         right, current_r = plus_parser(stream[1:])
         if current_r < len(stream) and stream[current_r + 1] == ')':
@@ -25,28 +20,32 @@ def atom_parser(stream):
 
 def exposant_parser(stream):
     left, current = atom_parser(stream)
+
     if current < len(stream) and stream[current] == ')':
-        return left, 0
-    if stream[0] == '^':
+        return left, current
+
+    if current < len(stream) and stream[current] == '^':
         right, current_r = exposant_parser(stream[current + 1:])
         return ast(stream[current], left, right), current + current_r + 1
     return left, current
 
 def multiplcation_parser(stream):
     left, current = exposant_parser(stream)
+
     if current < len(stream) and stream[current] == ')':
-        return left, 0
+        return left, current
+
     if current < len(stream) and stream[current] == '*':
         right, current_r = multiplcation_parser(stream[current + 1:])
         return ast(stream[current], left, right), current + current_r + 1
-    else:
-        right, current_r = exposant_parser(stream[current + 1:])
-        return ast(stream[current], left, right), current + current_r + 1
+    return left, current
 
 def plus_parser(stream):
     left, current = multiplcation_parser(stream)
+
     if current < len(stream) and stream[current] == ')':
         return left, current
+    
     if current < len(stream) and stream[current] in ['+', '-']:
         right, current_r = plus_parser(stream[current + 1:])
         return ast(stream[current], left, right), current + current_r + 1
