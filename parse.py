@@ -6,6 +6,15 @@ class ast():
         self.left = left
         self.right = right
 
+    # def reduce_equation(self):
+
+
+    def print_equation(self):
+        if self.value in ['^', '*', '/', '+', '-', '=']:
+            return f"{self.left.reduced_form()} {self.value} {self.right.reduced_form()}"
+        else:
+            return str(self.value)
+
 def atom_parser(stream):
     if not stream:
         raise SyntaxError("Unexcepted EOF")

@@ -4,13 +4,6 @@ import sys
 from lexer import lexing_line, OPERATOR
 from parse import if_parser
 
-def print_tree(tree, current):
-    print(current, tree.value)
-    if tree.left is not None:
-        print_tree(tree.left, "left")
-    if tree.right is not None:
-        print_tree(tree.right, "right")
-
 def check_if_operator(line):
     for opera in OPERATOR:
         if line.startswith(opera):
@@ -29,24 +22,7 @@ def read_input(line):
     rules, facts, queries = [], None, None
     tmp = lexing_line(line)
     if tmp:
-        if tmp[0] == '=' and rules and queries is None:
-            facts = tmp
-        elif tmp[0] == '?' and rules and facts is not None:
-            queries = tmp
-        elif tmp[0] != '=' and tmp[0] != '?' and queries is None and facts is None:
-            #print(tmp)
-            tmp_parser = if_parser(tmp)
-            # rule = {"règle": tmp_parser, "ligne": tmp}
-            # print(tmp_parser.left, tmp_parser.value, tmp_parser.right)
-            print("\n\n")
-            print_tree(tmp_parser.left, "center")
-            print("\n.\n")
-            print_tree(tmp_parser.right, "center")
-
-
-            # print_tree(tmp_parser, "center")
-            #rules.append(rule)
-            # rules.append(tmp_parser)
-        else:
-            raise Exception("Wrong formatage of file %s" %sys.argv[1])
+        tmp_parser = if_parser(tmp)
+    
+    print(tmp_parser.print_equation())
     return rules, facts, queries
