@@ -1,11 +1,11 @@
 
 from os import X_OK
 import sys
-from lexer import lexing_line, OPERATOR
+from lexer import lexing_line, OPERATORS
 from parse import if_parser
 
 def check_if_operator(line):
-    for opera in OPERATOR:
+    for opera in OPERATORS:
         if line.startswith(opera):
             return opera
     return ""
@@ -19,10 +19,8 @@ def read_input(line):
             facts -> list of tokens
             queries -> list of tokens
     """
-    rules, facts, queries = [], None, None
-    tmp = lexing_line(line)
+    tmp, negative_first_part, negative_second_part = lexing_line(line)
     if tmp:
         tmp_parser = if_parser(tmp)
-    
-    print(tmp_parser.print_equation())
-    return rules, facts, queries
+    tmp_parser.reduce_equation(negative_first_part, negative_second_part)
+    return None

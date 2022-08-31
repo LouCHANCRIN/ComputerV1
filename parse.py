@@ -1,4 +1,4 @@
-from lexer import OPERATOR
+from lexer import OPERATORS
 
 class ast():
     def __init__(self, value, left, right):
@@ -6,20 +6,54 @@ class ast():
         self.left = left
         self.right = right
 
-    # def reduce_equation(self):
+    def reduce_equation(self, negative_first_part, negative_second_part):
+        print(self.right.print_equation())
+        over = False
+        while over == False:
+            ret, over = self.return_deepest_operation(self.right, '-' if negative_second_part else '+')
+            if over == True:
+                self.right = None
+            print(f"RET TEST : {ret}, {over}")
 
+    def return_deepest_operation(self, current_node, current_op):
+        if current_node.left and current_node.left.value in ['+', '-']:
+            ret, destroy_left = self.return_deepest_operation(current_node.left, current_node.value)
+            if destroy_left:
+                current_node.left = None
+            return ret, False
+        elif current_node.right and current_node.right.value in ['+', '-']:
+            ret, destroy_right = self.return_deepest_operation(current_node.right, current_node.value)
+            if destroy_right:
+                current_node.right = None
+            return ret, False
+        elif current_node.right and current_node.right.value == '*':
+            ret = {'val': current_node.right.left.value, 'degree': current_node.right.right.right.value, 'sign': current_node.value}
+            current_node.right = None
+            return ret, False
+        elif current_node.left and current_node.left.value == '*':
+            ret = {'val': current_node.left.left.value, 'degree': current_node.left.right.right.value, 'sign': current_op}
+            current_node.left = None
+            return ret, True
+
+        else:
+            print("????")
 
     def print_equation(self):
-        if self.value in ['^', '*', '/', '+', '-', '=']:
-            return f"{self.left.reduced_form()} {self.value} {self.right.reduced_form()}"
+        if self.value in OPERATORS:
+            return f"{self.left.print_equation()} {self.value} {self.right.print_equation()}"
         else:
             return str(self.value)
+
 
 def atom_parser(stream):
     if not stream:
         raise SyntaxError("Unexcepted EOF")
-    if stream[0].isupper() == True or stream[0].islower() == True or stream[0].replace(".", "", 1).isdigit() == True:
+    if stream[0].isupper() or stream[0].islower() or stream[0].replace(".", "", 1).isdigit():
         return ast(stream[0], None, None), 1
+        # if stream[0] == 'X':
+        #     return ast(stream[0], None, None), 1
+        # else:
+        #     return ast(float(stream[0]), None, None), 1
     if stream[0] == '(':
         right, current_r = plus_parser(stream[1:])
         if current_r < len(stream) and stream[current_r + 1] == ')':

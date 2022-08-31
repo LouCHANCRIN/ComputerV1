@@ -4,7 +4,7 @@ from read import read_input
 from format import get_dict
 
 def main():
-    rules, facts, queries = read_input(sys.argv[1])
+    read_input(sys.argv[1])
     # dictionnaire, facts, queries, initial_fatcs = get_dict(rules, facts, queries)
 
 if __name__ == "__main__":
