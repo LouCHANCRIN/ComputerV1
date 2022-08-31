@@ -42,12 +42,12 @@ class ast():
                 current_node.right = None
             return ret, False
         elif current_node.right and current_node.right.value == '*':
-            value = int(current_node.right.left.value) if current_node.value == '+' else -int(current_node.right.left.value)
+            value = float(current_node.right.left.value) if current_node.value == '+' else -float(current_node.right.left.value)
             ret = {'val': value, 'degree': int(current_node.right.right.right.value), 'sign': current_node.value}
             current_node.right = None
             return ret, False
         elif current_node.left and current_node.left.value == '*':
-            value = int(current_node.left.left.value) if current_op == '+' else -int(current_node.left.left.value)
+            value = float(current_node.left.left.value) if current_op == '+' else -float(current_node.left.left.value)
             ret = {'val': value, 'degree': int(current_node.left.right.right.value), 'sign': current_op}
             current_node.left = None
             return ret, True
