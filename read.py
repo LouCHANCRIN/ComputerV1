@@ -22,5 +22,4 @@ def read_input(line):
     tmp, negative_first_part, negative_second_part = lexing_line(line)
     if tmp:
         tmp_parser = if_parser(tmp)
-    tmp_parser.reduce_equation(negative_first_part, negative_second_part)
-    return None
+    return tmp_parser.reduce_equation(negative_first_part, negative_second_part)

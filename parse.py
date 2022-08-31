@@ -7,13 +7,28 @@ class ast():
         self.right = right
 
     def reduce_equation(self, negative_first_part, negative_second_part):
-        print(self.right.print_equation())
         over = False
+        left_equation = {}
         while over == False:
-            ret, over = self.return_deepest_operation(self.right, '-' if negative_second_part else '+')
+            ret, over = self.return_deepest_operation(self.left, '-' if negative_first_part else '+')
             if over == True:
-                self.right = None
-            print(f"RET TEST : {ret}, {over}")
+                self.left = None
+            if not ret['degree'] in left_equation:
+                left_equation[ret['degree']] = ret['val']
+            else:
+                left_equation[ret['degree']] += ret['val']
+
+        over = False
+        if self.right.value != '0':
+            while over == False:
+                ret, over = self.return_deepest_operation(self.right, '-' if negative_second_part else '+')
+                if over == True:
+                    self.right = None
+                if not ret['degree'] in left_equation:
+                    left_equation[ret['degree']] = -ret['val']
+                else:
+                    left_equation[ret['degree']] -= ret['val']
+        return left_equation
 
     def return_deepest_operation(self, current_node, current_op):
         if current_node.left and current_node.left.value in ['+', '-']:
@@ -27,16 +42,15 @@ class ast():
                 current_node.right = None
             return ret, False
         elif current_node.right and current_node.right.value == '*':
-            ret = {'val': current_node.right.left.value, 'degree': current_node.right.right.right.value, 'sign': current_node.value}
+            value = int(current_node.right.left.value) if current_node.value == '+' else -int(current_node.right.left.value)
+            ret = {'val': value, 'degree': int(current_node.right.right.right.value), 'sign': current_node.value}
             current_node.right = None
             return ret, False
         elif current_node.left and current_node.left.value == '*':
-            ret = {'val': current_node.left.left.value, 'degree': current_node.left.right.right.value, 'sign': current_op}
+            value = int(current_node.left.left.value) if current_op == '+' else -int(current_node.left.left.value)
+            ret = {'val': value, 'degree': int(current_node.left.right.right.value), 'sign': current_op}
             current_node.left = None
             return ret, True
-
-        else:
-            print("????")
 
     def print_equation(self):
         if self.value in OPERATORS:
@@ -44,16 +58,11 @@ class ast():
         else:
             return str(self.value)
 
-
 def atom_parser(stream):
     if not stream:
         raise SyntaxError("Unexcepted EOF")
     if stream[0].isupper() or stream[0].islower() or stream[0].replace(".", "", 1).isdigit():
         return ast(stream[0], None, None), 1
-        # if stream[0] == 'X':
-        #     return ast(stream[0], None, None), 1
-        # else:
-        #     return ast(float(stream[0]), None, None), 1
     if stream[0] == '(':
         right, current_r = plus_parser(stream[1:])
         if current_r < len(stream) and stream[current_r + 1] == ')':

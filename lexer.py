@@ -15,7 +15,11 @@ def lexing_line(line):
     i = 0
     tokens = []
     follow_equal = False
-    negative_first_part = True if line[0] == '-' else False
+    if line[0] == '-':
+        i += 1
+        negative_first_part = True
+    else:
+        negative_first_part =  False
     negative_second_part = False
 
     while (i < len(line)):
@@ -26,7 +30,6 @@ def lexing_line(line):
         if operator == '-' and follow_equal:
             i += 1
             negative_second_part = True
-            follow_equal = False
 
         elif operator:
             i += len(operator)
@@ -39,5 +42,6 @@ def lexing_line(line):
                     i += 1
                 i -= 1
                 tokens.append(tmp)
+            follow_equal = False
             i += 1
     return tokens, negative_first_part, negative_second_part
