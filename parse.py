@@ -51,6 +51,11 @@ class ast():
             ret = {'val': value, 'degree': int(current_node.left.right.right.value), 'sign': current_op}
             current_node.left = None
             return ret, True
+        elif current_node.value == '*':
+            value = float(current_node.left.value) if current_op == '+' else -float(current_node.left.value)
+            ret = {'val': value, 'degree': int(current_node.right.right.value), 'sign': current_op}
+            current_node = None
+            return ret, True
 
     def print_equation(self):
         if self.value in OPERATORS:
